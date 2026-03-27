@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ClienteService {
     Cliente cadastrar(Cliente cliente);
     Optional<Cliente> buscarPorId(Long id);
-    List<Cliente> listaDeAtivos();
+    List<Cliente> buscarPorAtivos();
     Cliente atualizar(Long id, Cliente clienteAtualizado);
     void ativarDesativar(Long id);
 }

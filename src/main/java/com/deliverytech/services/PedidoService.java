@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface PedidoService {
     Pedido criar(Pedido pedido);
     Optional<Pedido> buscarPorId(Long id);
-    List<Pedido> listaDeClientes();
-    List<Pedido> listaDeRestaurantes();
+    List<Pedido> buscarPorClientes(Long clienteId);
+    List<Pedido> buscarPorRestaurantes(Long restauranteId);
     Pedido atualizarStatus(Long id, StatusPedido status);
     void cancelar(Long id);
 }
