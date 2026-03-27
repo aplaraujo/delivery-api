@@ -1,0 +1,20 @@
+package com.deliverytech.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RestauranteResponse {
+    private Long id;
+    private String nome;
+    private String categoria;
+    private String telefone;
+    private BigDecimal taxaEntrega;
+    private Integer tempoEntregaMinutos;
+    private Boolean ativo;
+}
