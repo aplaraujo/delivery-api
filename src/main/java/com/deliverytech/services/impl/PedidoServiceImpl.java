@@ -42,7 +42,7 @@ public class PedidoServiceImpl implements PedidoService {
                 .map(pedido -> {
                     pedido.setStatus(status);
                     return pedidoRepository.save(pedido);
-                }).orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+                }).orElseThrow(() -> new RuntimeException("PedidoResponse não encontrado"));
     }
 
     @Override
