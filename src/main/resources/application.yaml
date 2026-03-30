@@ -2,6 +2,14 @@ spring:
   application:
     name: delivery-api
 
+  security:
+    user:
+      name: admin
+      password: admin123
+
+  cache:
+    type: simple
+
   datasource:
     url: jdbc:h2:mem:deliverydb
     driver-class-name: org.h2.Driver
@@ -28,9 +36,19 @@ spring:
 
 logging:
   level:
-    org:
-      springframework:
-        web: DEBUG
+    root: info
+    com:
+      deliverytech: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *
+
+  endpoint:
+    health:
+      show-details: always
 
 server:
   port: 8080
