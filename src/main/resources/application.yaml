@@ -4,7 +4,7 @@ spring:
 
   security:
     user:
-      name: admin
+      name: admin@gmail.com
       password: admin123
 
   cache:
