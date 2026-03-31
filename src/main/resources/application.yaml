@@ -12,6 +12,7 @@ spring:
 
   datasource:
     url: jdbc:h2:mem:deliverydb
+#    url: jdbc:h2:file:/data/deliverydb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -40,9 +41,21 @@ logging:
     com:
       deliverytech: DEBUG
 
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: *
+
   endpoint:
     health:
       show-details: always
 
+
 server:
   port: 8080
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
