@@ -4,6 +4,8 @@ import com.deliverytech.entities.Restaurante;
 import com.deliverytech.repositories.RestauranteRepository;
 import com.deliverytech.services.RestauranteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +27,8 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
-    public List<Restaurante> buscarTodos() {
-        return restauranteRepository.findAll();
+    public Page<Restaurante> buscarTodos(Pageable pageable) {
+        return restauranteRepository.findAll(pageable);
     }
 
     @Override

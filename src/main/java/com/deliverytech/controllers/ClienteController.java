@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,11 +49,10 @@ public class ClienteController {
     }
 
     @GetMapping
-    public List<ClienteResponse> listar() {
-        logger.info("Buscando todos os clientes ativos");
-        return clienteService.buscarPorAtivos().stream()
-                .map(cliente -> new ClienteResponse(cliente.getId(), cliente.getNome(), cliente.getEmail(), cliente.getAtivo()))
-                .collect(Collectors.toList());
+    public Page<ClienteResponse> buscar(Pageable pageable) {
+        logger.info("Buscando todos os clientes ativos de forma paginada");
+        Page<Cliente> clientesPaginados = clienteService.buscarPorAtivos(pageable);
+        return clientesPaginados.map(cliente -> new ClienteResponse(cliente.getId(), cliente.getNome(), cliente.getEmail(), cliente.getAtivo()));
     }
 
     @GetMapping("/{id}")

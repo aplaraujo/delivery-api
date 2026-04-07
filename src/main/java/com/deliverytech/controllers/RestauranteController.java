@@ -5,6 +5,8 @@ import com.deliverytech.dto.response.RestauranteResponse;
 import com.deliverytech.entities.Restaurante;
 import com.deliverytech.services.RestauranteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,11 +43,9 @@ public class RestauranteController {
     }
 
     @GetMapping
-    public List<RestauranteResponse> buscarTodos(){
-        return restauranteService.buscarTodos().stream()
-                .map(rest -> new RestauranteResponse(
-                        rest.getId(), rest.getNome(), rest.getCategoria(), rest.getTelefone(), rest.getTaxaEntrega(), rest.getTempoEntregaMinutos(), rest.getAtivo()
-                )).toList();
+    public Page<RestauranteResponse> buscarTodos(Pageable pageable) {
+        Page<Restaurante> restaurantesPaginados = restauranteService.buscarTodos(pageable);
+        return restaurantesPaginados.map(rest -> new RestauranteResponse(rest.getId(), rest.getNome(), rest.getCategoria(), rest.getTelefone(), rest.getTaxaEntrega(), rest.getTempoEntregaMinutos(), rest.getAtivo()));
     }
 
     @GetMapping("/{id}")

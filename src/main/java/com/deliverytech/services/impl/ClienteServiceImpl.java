@@ -4,6 +4,8 @@ import com.deliverytech.entities.Cliente;
 import com.deliverytech.repositories.ClienteRepository;
 import com.deliverytech.services.ClienteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +27,8 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public List<Cliente> buscarPorAtivos() {
-        return clienteRepository.findByAtivoTrue();
+    public Page<Cliente> buscarPorAtivos(Pageable pageable) {
+        return clienteRepository.findByAtivoTrue(pageable);
     }
 
     @Override
