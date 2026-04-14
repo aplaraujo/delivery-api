@@ -9,18 +9,22 @@ import com.deliverytech.entities.Pedido;
 import com.deliverytech.entities.Produto;
 import com.deliverytech.entities.Restaurante;
 import com.deliverytech.entities.StatusPedido;
+import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.services.ClienteService;
 import com.deliverytech.services.PedidoService;
 import com.deliverytech.services.ProdutoService;
 import com.deliverytech.services.RestauranteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,12 +38,12 @@ public class PedidoController {
     private final ProdutoService produtoService;
 
     @PostMapping
-    public ResponseEntity<PedidoResponse> criar(@RequestBody PedidoRequest pedidoRequest){
-        Cliente cliente = clienteService.buscarPorId(pedidoRequest.getClienteId()).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-        Restaurante restaurante = restauranteService.buscarPorId(pedidoRequest.getRestauranteId()).orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
+    public ResponseEntity<PedidoResponse> criar(@Valid @RequestBody PedidoRequest pedidoRequest){
+        Cliente cliente = clienteService.buscarPorId(pedidoRequest.getClienteId()).orElseThrow(() -> new EntityNotFoundException("Cliente", pedidoRequest.getClienteId()));
+        Restaurante restaurante = restauranteService.buscarPorId(pedidoRequest.getRestauranteId()).orElseThrow(() -> new EntityNotFoundException("Restaurante", pedidoRequest.getRestauranteId()));
 
         List<ItemPedido> itens = pedidoRequest.getItens().stream().map(item -> {
-            Produto produto = produtoService.buscarPorId(item.getProdutoId()).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            Produto produto = produtoService.buscarPorId(item.getProdutoId()).orElseThrow(() -> new EntityNotFoundException("Produto", item.getProdutoId()));
             return ItemPedido.builder()
                     .produto(produto)
                     .quantidade(item.getQuantidade())
@@ -63,17 +67,18 @@ public class PedidoController {
                 .map(item -> new ItemPedidoResponse(item.getProduto().getId(), item.getProduto().getNome(), item.getQuantidade(), item.getPrecoUnitario()))
                 .toList();
 
-        return ResponseEntity.ok(
-                new PedidoResponse(
-                        salvo.getId(),
-                        cliente.getId(),
-                        restaurante.getId(),
-                        salvo.getEnderecoEntrega(),
-                        salvo.getTotal(),
-                        salvo.getStatus(),
-                        salvo.getDataPedido(),
-                        itensResp
-                )
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(salvo.getId()).toUri();
+
+        PedidoResponse pedidoResponse = new PedidoResponse(
+                salvo.getId(),
+                cliente.getId(),
+                restaurante.getId(),
+                salvo.getEnderecoEntrega(),
+                salvo.getTotal(),
+                salvo.getStatus(),
+                salvo.getDataPedido(),
+                itensResp
         );
+        return ResponseEntity.created(location).body(pedidoResponse);
     }
 }

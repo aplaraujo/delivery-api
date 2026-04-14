@@ -3,7 +3,9 @@ package com.deliverytech.controllers;
 import com.deliverytech.dto.request.RestauranteRequest;
 import com.deliverytech.dto.response.RestauranteResponse;
 import com.deliverytech.entities.Restaurante;
+import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.services.RestauranteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,7 +29,7 @@ public class RestauranteController {
     private final RestauranteService restauranteService;
 
     @PostMapping
-    public ResponseEntity<RestauranteResponse> cadastrar(@RequestBody RestauranteRequest restauranteRequest){
+    public ResponseEntity<RestauranteResponse> cadastrar(@Valid @RequestBody RestauranteRequest restauranteRequest){
         Restaurante restaurante = Restaurante.builder()
                 .nome(restauranteRequest.getNome())
                 .telefone(restauranteRequest.getTelefone())
@@ -37,7 +41,9 @@ public class RestauranteController {
 
         Restaurante salvo = restauranteService.cadastrar(restaurante);
 
-        return ResponseEntity.ok(new RestauranteResponse(
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(salvo.getId()).toUri();
+
+        return ResponseEntity.created(location).body(new RestauranteResponse(
                 salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getTelefone(), salvo.getTaxaEntrega(), salvo.getTempoEntregaMinutos(), salvo.getAtivo()
         ));
     }
@@ -53,7 +59,7 @@ public class RestauranteController {
         return restauranteService.buscarPorId(id)
                 .map(rest -> new RestauranteResponse(
                         rest.getId(), rest.getNome(), rest.getCategoria(), rest.getTelefone(), rest.getTaxaEntrega(), rest.getTempoEntregaMinutos(), rest.getAtivo()
-                )).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+                )).map(ResponseEntity::ok).orElseThrow(() -> new EntityNotFoundException("Restaurante", id));
     }
 
     @GetMapping("/categoria/{categoria}")

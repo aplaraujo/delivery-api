@@ -3,6 +3,7 @@ package com.deliverytech.controllers;
 import com.deliverytech.dto.request.ClienteRequest;
 import com.deliverytech.dto.response.ClienteResponse;
 import com.deliverytech.entities.Cliente;
+import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.services.ClienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +48,9 @@ public class ClienteController {
 
         logger.debug("Cliente salvo com id: {}", salvo.getId());
 
-        return ResponseEntity.ok(new ClienteResponse(salvo.getId(),  salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(salvo.getId()).toUri();
+
+        return ResponseEntity.created(location).body(new ClienteResponse(salvo.getId(),  salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
     }
 
     @GetMapping
@@ -61,10 +66,7 @@ public class ClienteController {
         return clienteService.buscarPorId(id)
                 .map(cliente -> new ClienteResponse(cliente.getId(), cliente.getNome(), cliente.getEmail(), cliente.getAtivo()))
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    logger.warn("Cliente com ID {} não encontrado", id);
-                    return ResponseEntity.notFound().build();
-                });
+                .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
     }
 
     @PutMapping("/{id}")

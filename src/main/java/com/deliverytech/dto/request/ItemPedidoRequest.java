@@ -1,7 +1,7 @@
 package com.deliverytech.dto.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemPedidoRequest {
-    @NotNull
+    @NotNull(message = "O ID do produto é obrigatório")
     private Long produtoId;
 
-    @Positive
+    @NotNull(message = "A quantidade é obrigatória")
+    @Min(value = 1, message = "A quantidade mínima deve ser 1")
     private Integer quantidade;
 }
