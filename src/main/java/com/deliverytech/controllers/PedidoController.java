@@ -14,6 +14,8 @@ import com.deliverytech.services.ClienteService;
 import com.deliverytech.services.PedidoService;
 import com.deliverytech.services.ProdutoService;
 import com.deliverytech.services.RestauranteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,12 +33,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/pedidos")
 @RequiredArgsConstructor
+@Tag(name = "Pedidos", description = "Endpoints para gerenciamento de pedidos")
 public class PedidoController {
     private final PedidoService pedidoService;
     private final ClienteService clienteService;
     private final RestauranteService restauranteService;
     private final ProdutoService produtoService;
 
+    @Operation(summary = "Cria um novo pedido", description = "Cria um novo pedido em um restaurante específico")
     @PostMapping
     public ResponseEntity<PedidoResponse> criar(@Valid @RequestBody PedidoRequest pedidoRequest){
         Cliente cliente = clienteService.buscarPorId(pedidoRequest.getClienteId()).orElseThrow(() -> new EntityNotFoundException("Cliente", pedidoRequest.getClienteId()));

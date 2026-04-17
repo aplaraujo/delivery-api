@@ -5,6 +5,8 @@ import com.deliverytech.dto.response.RestauranteResponse;
 import com.deliverytech.entities.Restaurante;
 import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.services.RestauranteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,9 +27,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/restaurantes")
 @RequiredArgsConstructor
+@Tag(name = "Restaurante", description = "Endpoints para gerenciamento de restaurantes")
 public class RestauranteController {
     private final RestauranteService restauranteService;
 
+    @Operation(summary = "Cadastra um novo restaurante", description = "Cria um novo restaurante no sistema")
     @PostMapping
     public ResponseEntity<RestauranteResponse> cadastrar(@Valid @RequestBody RestauranteRequest restauranteRequest){
         Restaurante restaurante = Restaurante.builder()
@@ -48,12 +52,14 @@ public class RestauranteController {
         ));
     }
 
+    @Operation(summary = "Busca todos os restaurantes", description = "Retorna uma lista paginada de todos os restaurantes")
     @GetMapping
     public Page<RestauranteResponse> buscarTodos(Pageable pageable) {
         Page<Restaurante> restaurantesPaginados = restauranteService.buscarTodos(pageable);
         return restaurantesPaginados.map(rest -> new RestauranteResponse(rest.getId(), rest.getNome(), rest.getCategoria(), rest.getTelefone(), rest.getTaxaEntrega(), rest.getTempoEntregaMinutos(), rest.getAtivo()));
     }
 
+    @Operation(summary = "Busca um restaurante por ID", description = "Retorna os detalhes de um restaurante específico pelo seu ID")
     @GetMapping("/{id}")
     public ResponseEntity<RestauranteResponse> buscarPorId(@PathVariable Long id){
         return restauranteService.buscarPorId(id)
@@ -62,6 +68,7 @@ public class RestauranteController {
                 )).map(ResponseEntity::ok).orElseThrow(() -> new EntityNotFoundException("Restaurante", id));
     }
 
+    @Operation(summary = "Busca restaurantes por categoria", description = "Retorna uma lista de restaurantes que pertencem a uma categoria específica")
     @GetMapping("/categoria/{categoria}")
     public List<RestauranteResponse> buscarPorCategoria(@PathVariable String categoria){
         return restauranteService.buscarPorCategoria(categoria).stream()
@@ -70,6 +77,7 @@ public class RestauranteController {
                 )).toList();
     }
 
+    @Operation(summary = "Atualiza um restaurante", description = "Atualiza os dados de um restaurante a partir do seu ID")
     @PutMapping("/{id}")
     public ResponseEntity<RestauranteResponse>  atualizar(@PathVariable Long id, @RequestBody RestauranteRequest restauranteRequest){
         Restaurante atualizado = Restaurante.builder()

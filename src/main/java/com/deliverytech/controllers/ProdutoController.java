@@ -7,6 +7,8 @@ import com.deliverytech.entities.Restaurante;
 import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.services.ProdutoService;
 import com.deliverytech.services.RestauranteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +29,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/produtos")
 @RequiredArgsConstructor
+@Tag(name = "Produtos", description = "Endpoints para gerenciamento de produtos")
 public class ProdutoController {
     private final ProdutoService produtoService;
     private final RestauranteService restauranteService;
 
+    @Operation(summary = "Cadastra um novo produto", description = "Cria um novo produto e o associa a um restaurante")
     @PostMapping
     public ResponseEntity<ProdutoResponse> cadastrar(@Valid @RequestBody ProdutoRequest produtoRequest){
         Restaurante restaurante = restauranteService.buscarPorId(produtoRequest.getRestauranteId()).orElseThrow(() -> new EntityNotFoundException("Restaurante", produtoRequest.getRestauranteId()));
@@ -51,6 +55,7 @@ public class ProdutoController {
         return ResponseEntity.created(location).body(new ProdutoResponse(salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getDescricao(), salvo.getPreco(), salvo.getDisponivel()));
     }
 
+    @Operation(summary = "Busca produtos por restaurante", description = "Retorna uma lista de todos os produtos de um restaurante específico")
     @GetMapping("/restaurante/{restauranteId}")
     public List<ProdutoResponse> buscarPorRestaurante(@PathVariable Long restauranteId){
         // Valida se o restaurante existe antes de mostrar a lista de produtos
@@ -63,6 +68,7 @@ public class ProdutoController {
                 .toList();
     }
 
+    @Operation(summary = "Atualiza um produto", description = "Atualiza os dados de um produto existente a partir do seu ID")
     @PutMapping("/{id}")
     public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoRequest produtoRequest){
         Produto atualizado = Produto.builder()
@@ -76,6 +82,7 @@ public class ProdutoController {
         return ResponseEntity.ok(new ProdutoResponse(salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getDescricao(), salvo.getPreco(), salvo.getDisponivel()));
     }
 
+    @Operation(summary = "Altera a disponibilidade de um produto", description = "Altera o status de um produto (disponível/indisponível) a partir do seu ID")
     @PatchMapping("/{id}/disponibilidade")
     public ResponseEntity<Void> alterarDisponibilidade(@PathVariable Long id, @RequestParam boolean disponivel){
         produtoService.alterarDisponibilidade(id, disponivel);

@@ -5,6 +5,8 @@ import com.deliverytech.dto.response.ClienteResponse;
 import com.deliverytech.entities.Cliente;
 import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.services.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,11 +31,13 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/clientes")
 @RequiredArgsConstructor
+@Tag(name = "Clientes", description = "Endpoints para gerenciamento de clientes")
 public class ClienteController {
     private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
 
     private final ClienteService clienteService;
 
+    @Operation(summary = "Cadastra um novo cliente", description = "Cria um novo cliente no sistema")
     @PostMapping
     public ResponseEntity<ClienteResponse> cadastrar(@Valid @RequestBody ClienteRequest clienteRequest) {
         logger.info("Cadastro de cliente iniciado: {}", clienteRequest.getEmail());
@@ -53,6 +57,7 @@ public class ClienteController {
         return ResponseEntity.created(location).body(new ClienteResponse(salvo.getId(),  salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
     }
 
+    @Operation(summary = "Busca todos os clientes ativos", description = "Retorna uma lista paginada de todos os clientes com status ativo")
     @GetMapping
     public Page<ClienteResponse> buscar(Pageable pageable) {
         logger.info("Buscando todos os clientes ativos de forma paginada");
@@ -60,6 +65,7 @@ public class ClienteController {
         return clientesPaginados.map(cliente -> new ClienteResponse(cliente.getId(), cliente.getNome(), cliente.getEmail(), cliente.getAtivo()));
     }
 
+    @Operation(summary = "Busca um cliente por ID", description = "Retorna os detalhes de um cliente específico pelo seu ID")
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponse> buscar(@PathVariable Long id) {
         logger.info("Buscando o cliente com id: {}", id);
@@ -69,6 +75,7 @@ public class ClienteController {
                 .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
     }
 
+    @Operation(summary = "Atualiza um cliente", description = "Atualiza os dados de um cliente existente a partir do seu ID")
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteRequest clienteRequest) {
         logger.info("Atualizando o cliente com id: {}", id);
@@ -83,6 +90,7 @@ public class ClienteController {
         return ResponseEntity.ok(new ClienteResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
     }
 
+    @Operation(summary = "Ativa ou desativa um cliente", description = "Altera o status de um cliente (ativo/inativo) a partir do seu ID")
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> ativarDesativar(@PathVariable Long id) {
         logger.info("Alterando o cliente com id: {}", id);

@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.OpenAPI;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "DeliveryTechAPI", version = "v1"),
+        info = @Info(title = "API DeliveryTech", version = "v1", description = "Documentação da API REST para o sistema de delivery"),
         security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(
@@ -19,4 +21,5 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT"
 )
 public class OpenApiConfig {
+
 }
