@@ -30,6 +30,7 @@ class ClienteControllerTest {
 
     @Test
     void naoDeveCriarClienteComNomeEmBranco() throws Exception {
+        // Testa a validação @NotBlank no campo "nome
         String json = "{\"nome\":\"\",\"email\":\"mariazinha@gmail.com\"}";
 
         mockMvc.perform(post("/api/clientes")
@@ -40,6 +41,8 @@ class ClienteControllerTest {
 
     @Test
     void naoDeveCriarClienteComEmailEmBranco() throws Exception {
+        // Tenta criar um cliente com o nome em branco
+        // A API deve retornar um erro 400 (Bad Request) por causa da anotação @NotBlank
         String json = "{\"nome\":\"Mariazinha\",\"email\":\"\"}";
 
         mockMvc.perform(post("/api/clientes")
@@ -50,6 +53,8 @@ class ClienteControllerTest {
 
     @Test
     void naoDeveCriarClienteComEmailInvalido() throws Exception {
+        // Tenta criar um cliente com o e-mail em formato inválido
+        // A API deve retornar um erro 400 (Bad Request) por causa da anotação @Email
         String json = "{\"nome\":\"Mariazinha\",\"email\":\"mariazinha.com\"}";
 
         mockMvc.perform(post("/api/clientes")
