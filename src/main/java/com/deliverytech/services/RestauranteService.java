@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface RestauranteService {
     Restaurante cadastrar(Restaurante restaurante);
     Optional<Restaurante> buscarPorId(Long id);
-    // List<Restaurante> buscarTodos();
     Page<Restaurante> buscarTodos(Pageable pageable);
     List<Restaurante> buscarPorCategoria(String categoria);
     Restaurante atualizar(Long id, Restaurante restauranteAtualizado);

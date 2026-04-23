@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface ClienteService {
     Cliente cadastrar(Cliente cliente);
     Optional<Cliente> buscarPorId(Long id);
-    // List<Cliente> buscarPorAtivos();
     Page<Cliente> buscarPorAtivos(Pageable pageable);
     Cliente atualizar(Long id, Cliente clienteAtualizado);
     void ativarDesativar(Long id);

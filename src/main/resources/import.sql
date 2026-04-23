@@ -25,5 +25,5 @@ INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponive
 INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponivel) VALUES('Hambúrgueres', 'Hambúrgueres', 'Frango empanado crocante, maionese de alho, alface e tomate.', 29.90, 4, true);
 INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponivel) VALUES('Double Smash', 'Hambúrgueres', 'Dois blends de fraldinha 150g, duplo cheddar e bacon.', 44.90, 4, true);
 INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponivel) VALUES('Burrito de Carne', 'Burritos', 'Tortilha com carne temperada, arroz mexicano, feijão e guacamole.', 38.50, 5, true);
-INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponivel) VALUES('Nachos com Queijo', 'Entradas', '"Tortilhas crocantes com molho de queijo, jalapeño e pico de gallo.', 24.90, 5, true);
+INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponivel) VALUES('Nachos com Queijo', 'Entradas', 'Tortilhas crocantes com molho de queijo, jalapeño e pico de gallo.', 24.90, 5, true);
 INSERT INTO produto(nome, categoria, descricao, preco, restaurante_id, disponivel) VALUES('Taco de Carnitas', 'Tacos', 'Tortilha de milho com porco desfiado, coentro e cebola.', 19.90, 5, true);

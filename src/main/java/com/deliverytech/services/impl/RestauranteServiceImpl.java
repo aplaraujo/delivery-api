@@ -28,7 +28,7 @@ public class RestauranteServiceImpl implements RestauranteService {
 
     @Override
     public Page<Restaurante> buscarTodos(Pageable pageable) {
-        return restauranteRepository.findAll(pageable);
+        return restauranteRepository.findByAtivoTrueOrderByNomeAsc(pageable);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Page<Cliente> buscarPorAtivos(Pageable pageable) {
-        return clienteRepository.findByAtivoTrue(pageable);
+        return clienteRepository.findByAtivoTrueOrderByNomeAsc(pageable);
     }
 
     @Override
