@@ -79,7 +79,7 @@ public class RestauranteController {
 
     @Operation(summary = "Atualiza um restaurante", description = "Atualiza os dados de um restaurante a partir do seu ID")
     @PutMapping("/{id}")
-    public ResponseEntity<RestauranteResponse>  atualizar(@PathVariable Long id, @RequestBody RestauranteRequest restauranteRequest){
+    public ResponseEntity<RestauranteResponse>  atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteRequest restauranteRequest){
         Restaurante atualizado = Restaurante.builder()
                 .nome(restauranteRequest.getNome())
                 .telefone(restauranteRequest.getTelefone())

@@ -8,7 +8,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -27,7 +30,7 @@ class RestauranteControllerTest {
                 .content(json))
                 .andExpect(status().isCreated());
     }
-    // String json = "{\"nome\":\"Pizza Expressa\",\"categoria\":\"Pizzaria\",\"telefone\":\"+55 11 92345-6789\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"30\"}";
+
     @Test
     void naoDeveCriarRestauranteComNomeEmBranco() throws Exception {
         // Testa a validação @NotBlank no campo "nome"
@@ -133,4 +136,153 @@ class RestauranteControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void deveRetornarListaDeRestaurantesOrdenadaPorNomeEPorStatusAtivo() throws Exception {
+        mockMvc.perform(get("/api/restaurantes")
+                        .accept(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.content").exists())
+                        .andExpect(jsonPath("$.content[0].nome").value("Burger Street"))
+                        .andExpect(jsonPath("$.content[1].nome").value("Cantina do Nono"))
+                        .andExpect(jsonPath("$.content[2].nome").value("Churrascaria Gaúcha"));
+    }
+
+    @Test
+    void deveBuscarUmRestaurantePorId() throws Exception {
+        Long existingRestaurantId = 4L;
+
+        mockMvc.perform(get("/api/restaurantes/" + existingRestaurantId)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(existingRestaurantId))
+                .andExpect(jsonPath("$.nome").value("Burger Street"))
+                .andExpect(jsonPath("$.categoria").value("Lanches"))
+                .andExpect(jsonPath("$.telefone").value("(21) 97788-9900"))
+                .andExpect(jsonPath("$.taxaEntrega").value(4.99))
+                .andExpect(jsonPath("$.tempoEntregaMinutos").value(25))
+                .andExpect(jsonPath("$.ativo").value(true));
+    }
+
+    @Test
+    void deveBuscarUmRestaurantePorCategoria() throws Exception {
+        String categoria = "Lanches";
+
+        mockMvc.perform(get("/api/restaurantes/categoria/" + categoria)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    // String json = "{\"nome\":\"Pizza Expressa\",\"categoria\":\"Pizzaria\",\"telefone\":\"+55 11 92345-6789\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"30\"}";
+    @Test
+    void deveAtualizarUmRestauranteComSucesso() throws Exception {
+        Long existingRestaurantId = 1L;
+        String json = "{\"nome\":\"Cantina do Nono Antonio\",\"categoria\":\"Italiana\",\"telefone\":\"(11) 91234-5678\",\"taxaEntrega\":\"5.99\",\"tempoEntregaMinutos\":\"40\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isOk());
+    }
+
+    // String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+    @Test
+    void naoDeveAtualizarRestauranteComNomeEmBranco() throws Exception {
+        // Testa a validação @NotBlank no campo "nome"
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"\",\"categoria\":\"Japonesa\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteForaDoLimiteDe2A100Caracteres() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"S\",\"categoria\":\"Japonesa\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComCategoriaEmBranco() throws Exception {
+        // Testa a validação @NotBlank no campo "categoria"
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComTelefoneEmBranco() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComTaxaDeEntregaNula() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"\",\"taxaEntrega\":\"null\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComTaxaDeEntregaComValorNegativo() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"\",\"taxaEntrega\":\"-7.50\",\"tempoEntregaMinutos\":\"50\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComTempoDeEntregaNulo() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"null\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComTempoDeEntregaInferiorA10Minutos() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"5\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveAtualizarRestauranteComTempoDeEntregaSuperiorA120Minutos() throws Exception {
+        Long existingRestaurantId = 2L;
+        String json = "{\"nome\":\"Sabor Oriental\",\"categoria\":\"Japonesa\",\"telefone\":\"(11) 98765-4321\",\"taxaEntrega\":\"7.50\",\"tempoEntregaMinutos\":\"200\",\"ativo\":\"true\"}";
+
+        mockMvc.perform(put("/api/restaurantes/" + existingRestaurantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                        .andExpect(status().isBadRequest());
+    }
 }
