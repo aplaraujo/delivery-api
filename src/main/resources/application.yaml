@@ -40,16 +40,23 @@ logging:
     root: info
     com:
       deliverytech: DEBUG
+  pattern:
+    level: %5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
 
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: *
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *
 
   endpoint:
     health:
       show-details: always
+
+  tracing:
+    sampling:
+      probability: 1.0
+
 
 
 server:
@@ -59,3 +66,10 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+  show-actuator: true
+  group-configs[0]:
+    group: 1. DeliveryTech API
+    paths-to-match: /api/**
+  group-configs[1]:
+    group: 2. Monitoramento (Actuator)
+    paths-to-match: /actuator/**
