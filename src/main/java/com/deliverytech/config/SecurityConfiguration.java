@@ -27,14 +27,22 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Definindo uma lista de endpoints públicos que não exigem autenticação
+        final String[] PUBLIC_ENDPOINTS = {
+                "/api/auth/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/api-docs/**",
+                "/h2-console/**",
+                "/actuator/**" // Liberando todos os endpoints do Actuator
+        };
         return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable) // Desabilita CRSF para APIs sem estado (stateless)
+                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // Permite o acesso ao H2 Console
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Garante sessões sem estado
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                // Enpoints públicos
-                                .requestMatchers("/health","/info","/swagger-ui.html","/swagger-ui/**", "/api-docs/**", "/h2-console/**", "/actuator/**").permitAll()
+                        // Libera o acesso aos endpoints públicos definidos acima
+                        auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 // Endpoints de Cliente: ADMIN pode gerenciar, CLIENTE pode se cadastrar
                                 .requestMatchers("/api/clientes").hasAnyAuthority("ROLE_ADMIN", "ROLE_CLIENTE")
                                 .requestMatchers("/api/clientes/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_CLIENTE")
@@ -46,7 +54,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/restaurantes/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/produtos").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/produtos/**").hasAuthority("ROLE_ADMIN")
-                                // Garante que qualquer outra requisição não listada seja bloqueada
+                                // Garante que qualquer outra requisição não listada seja autenticada
                                 .anyRequest().authenticated()
 
                         )

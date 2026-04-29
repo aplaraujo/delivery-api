@@ -41,13 +41,13 @@ logging:
     com:
       deliverytech: DEBUG
   pattern:
-    level: %5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 management:
   endpoints:
     web:
       exposure:
-        include: *
+        include: "*"
 
   endpoint:
     health:
@@ -68,8 +68,8 @@ springdoc:
     path: /swagger-ui.html
   show-actuator: true
   group-configs[0]:
-    group: 1. DeliveryTech API
-    paths-to-match: /api/**
+    group: "1. DeliveryTech API"
+    paths-to-match: "/api/**"
   group-configs[1]:
-    group: 2. Monitoramento (Actuator)
-    paths-to-match: /actuator/**
+    group: "2. Monitoramento (Actuator)"
+    paths-to-match: "/actuator/**"
