@@ -4,6 +4,8 @@ Sistema de delivery desenvolvido com Spring Boot e Java 21.
 
 ## 📄 Documento de Requisitos do Projeto
 
+https://github.com/aplaraujo/delivery-api-assets/blob/main/delivery-api-documentacao-requisitos.pdf
+
 ## 💻 Tecnologias Usadas
 
 - **Spring Boot:** *framework* Java que facilita a criação de **APIs e aplicativos web**
