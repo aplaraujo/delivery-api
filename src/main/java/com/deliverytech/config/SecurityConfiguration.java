@@ -34,27 +34,22 @@ public class SecurityConfiguration {
                 "/swagger-ui/**",
                 "/api-docs/**",
                 "/h2-console/**",
-                "/actuator/**" // Liberando todos os endpoints do Actuator
+                "/actuator/**"
         };
         return http
-                .csrf(AbstractHttpConfigurer::disable) // Desabilita CRSF para APIs sem estado (stateless)
+                .csrf(AbstractHttpConfigurer::disable)
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // Permite o acesso ao H2 Console
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Garante sessões sem estado
                 .authorizeHttpRequests(auth ->
-                        // Libera o acesso aos endpoints públicos definidos acima
                         auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                                // Endpoints de Cliente: ADMIN pode gerenciar, CLIENTE pode se cadastrar
                                 .requestMatchers("/api/clientes").hasAnyAuthority("ROLE_ADMIN", "ROLE_CLIENTE")
                                 .requestMatchers("/api/clientes/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_CLIENTE")
-                                // Endpoints de Pedido: Apenas CLIENTE pode criar/ver
                                 .requestMatchers("/api/pedidos").hasAuthority("ROLE_CLIENTE")
                                 .requestMatchers("/api/pedidos/**").hasAuthority("ROLE_CLIENTE")
-                                // Endpoints de Restaurante e Produto: Apenas ADMIN pode gerenciar
                                 .requestMatchers("/api/restaurantes").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/restaurantes/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/produtos").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/produtos/**").hasAuthority("ROLE_ADMIN")
-                                // Garante que qualquer outra requisição não listada seja autenticada
                                 .anyRequest().authenticated()
 
                         )

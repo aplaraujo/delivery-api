@@ -5,10 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Representa a estrutura de resposta de erro padronizada, seguindo o padrão RFC 7807
- * Campos nulos não serão incluídos na resposta JSON
- * */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
     private final LocalDateTime timestamp;
@@ -18,7 +14,6 @@ public class ErrorResponse {
     private final String path;
     private final Map<String, String> details;
 
-    // Construtor principal com todos os campos
     public ErrorResponse(int status, String error, String message, String path, Map<String, String> details) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
@@ -28,7 +23,6 @@ public class ErrorResponse {
         this.details = details;
     }
 
-    // Construtor alternativo para erros que não possuem detalhes de campos específicos
     public ErrorResponse(int status, String error, String message, String path) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
@@ -38,7 +32,6 @@ public class ErrorResponse {
         this.details = null;
     }
 
-    // Métodos "getters" para serializar os campos em JSON
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

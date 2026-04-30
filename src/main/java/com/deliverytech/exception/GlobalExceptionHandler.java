@@ -10,17 +10,8 @@ import org.springframework.web.context.request.WebRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/**
- * "Handler" global para capturar e tratar exceções em toda a aplicação
- * Centraliza a lógica de tratamento de erros, retornando respostas padronizadas.
- * */
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    /**
-     * Captura exceções de validação (ex: @NotBlank, @Size) lançadas quando um DTO é lançado
-     * Retorna uma resposta HTTP 400 (Bad Request) com os detalhes de cada campo que falhou
-     * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, WebRequest request) {
         Map<String, String> details = new HashMap<>();
@@ -38,9 +29,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Captura exceções do tipo EntityNotFoundException e retorna uma resposta HTTP 404 (Not Found)
-     * */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -52,9 +40,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Captura erros do tipo ConflictException e retorna uma resposta HTTP 409 (Conflict)
-     * */
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -66,10 +51,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
-    /**
-     * Captura erros genéricos (erros não esperados) e retorna uma resposta HTTP 500 (Internal Server Error)
-     * Isso garante que a API nunca exponha "stack traces" para o cliente
-     * */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
