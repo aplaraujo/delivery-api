@@ -7,8 +7,8 @@ spring:
       name: admin@gmail.com
       password: admin123
 
-  cache:
-    type: simple
+#  cache:
+#    type: simple
 
   datasource:
     url: jdbc:h2:mem:deliverydb

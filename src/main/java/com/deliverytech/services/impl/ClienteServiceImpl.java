@@ -4,6 +4,7 @@ import com.deliverytech.entities.Cliente;
 import com.deliverytech.repositories.ClienteRepository;
 import com.deliverytech.services.ClienteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,9 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Cacheable("clientes")
     public Page<Cliente> buscarPorAtivos(Pageable pageable) {
+        simulateDelay();
         return clienteRepository.findByAtivoTrueOrderByNomeAsc(pageable);
     }
 
